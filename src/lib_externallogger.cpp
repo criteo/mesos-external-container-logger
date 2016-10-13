@@ -88,15 +88,16 @@ public:
     // At a minimum we want to put the sandboxDirectory into the environment
     // since it's extremely convenient for shell scripts.
     environment.insert(
-        std::pair<std::string, std::string>(prefix + "SANDBOX_DIRECTORY",
-          sandboxDirectory)
+        std::pair<std::string, std::string>(flags.mesos_field_prefix +
+          "SANDBOX_DIRECTORY", sandboxDirectory)
     );
 
     // If json protobuf var is not blank, set it into the environment.
     if (flags.executor_info_json_field != "") {
       JSON::Object jsonObjExecInfo = JSON::protobuf(executorInfo);
       std::string jsonExecInfo = stringify(jsonObjExecInfo);
-      environment[flags.executor_info_json_field] = jsonExecInfo;
+      environment[flags.mesos_field_prefix + flags.executor_info_json_field]
+                  = jsonExecInfo;
     }
 
     // NOTE: We manually construct a pipe here instead of using
@@ -143,11 +144,11 @@ public:
     // childHooks.emplace_back(Subprocess::ChildHook::SETSID());
 
     // Set the stream name for the stdout stream
-    environment[prefix + flags.stream_name_field] = "STDOUT";
+    environment[flags.mesos_field_prefix + flags.stream_name_field] = "STDOUT";
 
     Try<Subprocess> outProcess = subprocess(
-        flags.external_logger_cmd,
-        std::vector<string>{std::string(flags.external_logger_cmd)},
+        flags.external_logger_binary,
+        std::vector<string>{std::string(flags.external_logger_binary)},
         Subprocess::FD(outfds.read, Subprocess::IO::OWNED),
         Subprocess::PATH("/dev/null"),
         Subprocess::FD(STDERR_FILENO),
@@ -187,11 +188,11 @@ public:
     }
 
     // Set the stream name for the stderr stream
-    environment[prefix + flags.stream_name_field] = "STDERR";
+    environment[flags.mesos_field_prefix + flags.stream_name_field] = "STDERR";
 
     Try<Subprocess> errProcess = subprocess(
-        flags.external_logger_cmd,
-        std::vector<string>{flags.external_logger_cmd},
+        flags.external_logger_binary,
+        std::vector<string>{flags.external_logger_binary},
         Subprocess::FD(errfds.read, Subprocess::IO::OWNED),
         Subprocess::PATH("/dev/null"),
         Subprocess::FD(STDERR_FILENO),

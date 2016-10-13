@@ -45,17 +45,17 @@ struct Flags : public virtual flags::FlagsBase
 {
   Flags()
   {
-    add(&external_logger_cmd,
-        "external_logger_cmd",
+    add(&external_logger_binary,
+        "external_logger_binary",
         None(),
         "Path to the external command which will read STDIN for logs",
-        (std::string*)nullptr,
+        static_cast<const std::string*>(nullptr),
         [](const std::string& executablePath) -> Option<Error> {
           if (!os::exists(executablePath)) {
               return Error("Cannot find: " + executablePath);
           }
 
-          // Check the specified logger is actually executable by Mesos
+          // Check the specified command is an executable.
           Try<bool> isExecutable = os::access(executablePath, X_OK);
           if (isExecutable.isSome()) {
               if (!isExecutable.get()) {
@@ -82,11 +82,12 @@ struct Flags : public virtual flags::FlagsBase
     add(&executor_info_json_field,
         "executor_info_json_field",
         "Name of the environment variable to store JSON serialization of \n"
-        "executorInfo under",
+        "executorInfo under. Note this field is also concatenated with \n"
+        "the value of --mesos_field_prefix.",
         "MESOS_EXECUTORINFO_JSON");
   }
 
-  std::string external_logger_cmd;
+  std::string external_logger_binary;
   std::string mesos_field_prefix;
   std::string stream_name_field;
   std::string executor_info_json_field;
