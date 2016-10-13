@@ -22,7 +22,8 @@ fi
 
 if [ ! -d ../mesos-install ]; then
   cd build
-  ../configure --prefix=$PWD/../../mesos-install --enable-install-module-dependencies
+  ../configure CXXFLAGS='-O2 -Wno-deprecated-declarations' \
+               --prefix=$PWD/../../mesos-install --enable-install-module-dependencies
   make -j 6 V=0
   make install
 fi
