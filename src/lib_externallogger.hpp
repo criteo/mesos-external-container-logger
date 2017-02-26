@@ -45,9 +45,9 @@ struct Flags : public virtual flags::FlagsBase
 {
   Flags()
   {
-    add(&external_logger_binary,
+    add(&Flags::external_logger_binary,
         "external_logger_binary",
-        None(),
+        "external_logger_script",
         "Path to the external command which will read STDIN for logs",
         static_cast<const std::string*>(nullptr),
         [](const std::string& executablePath) -> Option<Error> {
@@ -68,18 +68,18 @@ struct Flags : public virtual flags::FlagsBase
           return None();
         });
 
-    add(&mesos_field_prefix,
+    add(&Flags::mesos_field_prefix,
         "mesos_field_prefix",
         "Prefix to add to environment variables containing task data passed\n"
         "to the external logger process.",
         "MESOS_LOG_");
 
-    add(&stream_name_field,
+    add(&Flags::stream_name_field,
         "stream_name_field",
         "Name of the field to store the stdout/stderr stream identifier under",
         "STREAM");
 
-    add(&executor_info_json_field,
+    add(&Flags::executor_info_json_field,
         "executor_info_json_field",
         "Name of the environment variable to store JSON serialization of \n"
         "executorInfo under. Note this field is also concatenated with \n"
@@ -108,17 +108,13 @@ public:
   // This is a noop.  The external container logger has nothing to initialize.
   virtual Try<Nothing> initialize();
 
-  // This is a noop. We have no files to recover.
-  virtual process::Future<Nothing> recover(
-      const ExecutorInfo& executorInfo,
-      const std::string& sandboxDirectory);
-
   // Tells the subprocess to redirect the executor/task's stdout and stderr
   // to the external command.
   virtual process::Future<mesos::slave::ContainerLogger::SubprocessInfo>
   prepare(
       const ExecutorInfo& executorInfo,
-      const std::string& sandboxDirectory);
+      const std::string& sandboxDirectory,
+      const Option<std::string>& user);
 
 protected:
   Flags flags;

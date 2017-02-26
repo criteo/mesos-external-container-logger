@@ -6,7 +6,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 project(mesos-external-container-logger
-    VERSION 0.1.1
+    VERSION 0.1.2
     LANGUAGES CXX C)
 enable_testing()
 
@@ -66,7 +66,7 @@ add_definitions(
     -DTESTLIBEXECDIR="nowhere"
     -DSBINDIR="nowhere"
     -DPKGDATADIR="nowhere"
-    -DVERSION="1.0.1"
+    -DVERSION="1.1.0"
 )
 
 set(EXTERNAL_CONTAINER_LOGGER_SOURCES

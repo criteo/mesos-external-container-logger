@@ -64,26 +64,16 @@ class ExternalContainerLoggerProcess :
 public:
   ExternalContainerLoggerProcess(const Flags& _flags) : flags(_flags) {}
 
-  Future<Nothing> recover(
-      const ExecutorInfo& executorInfo,
-      const std::string& sandboxDirectory)
-  {
-    return Nothing();
-  }
-
   // Spawns two subprocesses that should read from stdin to receive the stdout
   // and stderr log streams from the task.
   Future<SubprocessInfo> prepare(
       const ExecutorInfo& executorInfo,
-      const std::string& sandboxDirectory)
+      const std::string& sandboxDirectory,
+      const Option<std::string>& user)
   {
     // Setup a blank environment so as not to interfere with the executed
     // subprocess.
     std::map<std::string, std::string> environment;
-
-    // Setup the the environment variable prefix we'll use for log-specific
-    // fields
-    std::string prefix = flags.mesos_field_prefix;
 
     // At a minimum we want to put the sandboxDirectory into the environment
     // since it's extremely convenient for shell scripts.
@@ -91,6 +81,16 @@ public:
         std::pair<std::string, std::string>(flags.mesos_field_prefix +
           "SANDBOX_DIRECTORY", sandboxDirectory)
     );
+    // Also insert the value of the user parameter so the external script
+    // can decide if it wants to sudo or change ownerships. The prefix is
+    // used because just setting USER could affect some commands
+    // unintentionally.
+    if (user.isSome()) {
+        environment.insert(
+            std::pair<std::string, std::string>(
+                flags.mesos_field_prefix + "USER", user.get())
+        );
+    }
 
     // If json protobuf var is not blank, set it into the environment.
     if (flags.executor_info_json_field != "") {
@@ -148,7 +148,7 @@ public:
 
     Try<Subprocess> outProcess = subprocess(
         flags.external_logger_binary,
-        std::vector<string>{std::string(flags.external_logger_binary)},
+        std::vector<std::string>{std::string(flags.external_logger_binary)},
         Subprocess::FD(outfds.read, Subprocess::IO::OWNED),
         Subprocess::PATH("/dev/null"),
         Subprocess::FD(STDERR_FILENO),
@@ -241,29 +241,18 @@ Try<Nothing> ExternalContainerLogger::initialize()
   return Nothing();
 }
 
-
-Future<Nothing> ExternalContainerLogger::recover(
-    const ExecutorInfo& executorInfo,
-    const std::string& sandboxDirectory)
-{
-  return dispatch(
-      process.get(),
-      &ExternalContainerLoggerProcess::recover,
-      executorInfo,
-      sandboxDirectory);
-}
-
-
 Future<ContainerLogger::SubprocessInfo>
 ExternalContainerLogger::prepare(
     const ExecutorInfo& executorInfo,
-    const std::string& sandboxDirectory)
+    const std::string& sandboxDirectory,
+    const Option<std::string>& user)
 {
   return dispatch(
       process.get(),
       &ExternalContainerLoggerProcess::prepare,
       executorInfo,
-      sandboxDirectory);
+      sandboxDirectory,
+      user);
 }
 
 } // namespace logger {
