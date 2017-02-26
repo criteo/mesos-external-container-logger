@@ -128,20 +128,18 @@ public:
     // If we are on systemd, then extend the life of the process as we
     // do with the executor. Any grandchildren's lives will also be
     // extended.
-    std::vector<Subprocess::Hook> parentHooks;
+    std::vector<Subprocess::ParentHook> parentHooks;
 #ifdef __linux__
     if (systemd::enabled()) {
-      parentHooks.emplace_back(Subprocess::Hook(
+      parentHooks.emplace_back(Subprocess::ParentHook(
           &systemd::mesos::extendLifetime));
     }
 #endif // __linux__
 
-    // Note: This is not supported by Mesos 1.0.1. We use SETSID in the call
-    // to subprocess() below instead.
     // Each logger needs to SETSID so it can continue logging if the agent
     // dies.
-    // std::vector<Subprocess::ChildHook> childHooks;
-    // childHooks.emplace_back(Subprocess::ChildHook::SETSID());
+    std::vector<Subprocess::ChildHook> childHooks;
+    childHooks.emplace_back(Subprocess::ChildHook::SETSID());
 
     // Set the stream name for the stdout stream
     environment[flags.mesos_field_prefix + flags.stream_name_field] = "STDOUT";
@@ -152,11 +150,11 @@ public:
         Subprocess::FD(outfds.read, Subprocess::IO::OWNED),
         Subprocess::PATH("/dev/null"),
         Subprocess::FD(STDERR_FILENO),
-        SETSID,
-        None(),
+        nullptr,
         environment,
         None(),
-        parentHooks);
+        parentHooks,
+        childHooks);
 
     if (outProcess.isError()) {
       os::close(outfds.write.get());
@@ -192,15 +190,15 @@ public:
 
     Try<Subprocess> errProcess = subprocess(
         flags.external_logger_binary,
-        std::vector<string>{flags.external_logger_binary},
+        std::vector<std::string>{flags.external_logger_binary},
         Subprocess::FD(errfds.read, Subprocess::IO::OWNED),
         Subprocess::PATH("/dev/null"),
         Subprocess::FD(STDERR_FILENO),
-        SETSID,
-        None(),
+        nullptr,
         environment,
         None(),
-        parentHooks);
+        parentHooks,
+        childHooks);
 
     if (errProcess.isError()) {
       os::close(outfds.write.get());
