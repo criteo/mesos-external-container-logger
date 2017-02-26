@@ -68,8 +68,7 @@ public:
   // and stderr log streams from the task.
   Future<SubprocessInfo> prepare(
       const ExecutorInfo& executorInfo,
-      const std::string& sandboxDirectory,
-      const Option<std::string>& user)
+      const std::string& sandboxDirectory)
   {
     // Setup a blank environment so as not to interfere with the executed
     // subprocess.
@@ -81,16 +80,6 @@ public:
         std::pair<std::string, std::string>(flags.mesos_field_prefix +
           "SANDBOX_DIRECTORY", sandboxDirectory)
     );
-    // Also insert the value of the user parameter so the external script
-    // can decide if it wants to sudo or change ownerships. The prefix is
-    // used because just setting USER could affect some commands
-    // unintentionally.
-    if (user.isSome()) {
-        environment.insert(
-            std::pair<std::string, std::string>(
-                flags.mesos_field_prefix + "USER", user.get())
-        );
-    }
 
     // If json protobuf var is not blank, set it into the environment.
     if (flags.executor_info_json_field != "") {
@@ -242,15 +231,13 @@ Try<Nothing> ExternalContainerLogger::initialize()
 Future<ContainerLogger::SubprocessInfo>
 ExternalContainerLogger::prepare(
     const ExecutorInfo& executorInfo,
-    const std::string& sandboxDirectory,
-    const Option<std::string>& user)
+    const std::string& sandboxDirectory)
 {
   return dispatch(
       process.get(),
       &ExternalContainerLoggerProcess::prepare,
       executorInfo,
-      sandboxDirectory,
-      user);
+      sandboxDirectory);
 }
 
 } // namespace logger {

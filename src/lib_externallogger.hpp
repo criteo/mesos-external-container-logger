@@ -113,8 +113,7 @@ public:
   virtual process::Future<mesos::slave::ContainerLogger::SubprocessInfo>
   prepare(
       const ExecutorInfo& executorInfo,
-      const std::string& sandboxDirectory,
-      const Option<std::string>& user);
+      const std::string& sandboxDirectory);
 
 protected:
   Flags flags;
