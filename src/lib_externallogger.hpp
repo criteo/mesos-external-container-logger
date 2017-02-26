@@ -84,7 +84,7 @@ struct Flags : public virtual flags::FlagsBase
         "Name of the environment variable to store JSON serialization of \n"
         "executorInfo under. Note this field is also concatenated with \n"
         "the value of --mesos_field_prefix.",
-        "MESOS_EXECUTORINFO_JSON");
+        "EXECUTORINFO_JSON");
   }
 
   std::string external_logger_binary;
