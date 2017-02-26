@@ -3,7 +3,7 @@
 This is a container logger module for [Mesos](http://mesos.apache.org/)
 that redirects container logs to an external process.
 
-It is a backport to Mesos 1.0.1 of the `ExternalContainerLogger` module
+It is a backport to Mesos 1.1.0 of the `ExternalContainerLogger` module
 developed in
 [MESOS-6003](https://issues.apache.org/jira/browse/MESOS-6003).
 Read the [documentation](https://reviews.apache.org/r/51258/) or this
