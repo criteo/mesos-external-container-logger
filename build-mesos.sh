@@ -2,7 +2,7 @@
 
 set -e
 
-MESOS_VERSION=1.1.0
+MESOS_VERSION=1.2.0
 
 if [ ! -f mesos-$MESOS_VERSION.tar.gz ]; then
     curl --remote-name http://www-eu.apache.org/dist/mesos/$MESOS_VERSION/mesos-$MESOS_VERSION.tar.gz
@@ -24,6 +24,6 @@ if [ ! -d ../mesos-install ]; then
   cd build
   ../configure CXXFLAGS='-O2 -Wno-deprecated-declarations' \
                --prefix=$PWD/../../mesos-install --enable-install-module-dependencies
-  make -j 6 V=0
+  make -j 16 V=0
   make install
 fi

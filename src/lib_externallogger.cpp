@@ -68,7 +68,8 @@ public:
   // and stderr log streams from the task.
   Future<SubprocessInfo> prepare(
       const ExecutorInfo& executorInfo,
-      const std::string& sandboxDirectory)
+      const std::string& sandboxDirectory,
+      const Option<std::string>& user)
   {
     // Setup a blank environment so as not to interfere with the executed
     // subprocess.
@@ -231,13 +232,15 @@ Try<Nothing> ExternalContainerLogger::initialize()
 Future<ContainerLogger::SubprocessInfo>
 ExternalContainerLogger::prepare(
     const ExecutorInfo& executorInfo,
-    const std::string& sandboxDirectory)
+    const std::string& sandboxDirectory,
+    const Option<std::string>& user)
 {
   return dispatch(
       process.get(),
       &ExternalContainerLoggerProcess::prepare,
       executorInfo,
-      sandboxDirectory);
+      sandboxDirectory,
+      user);
 }
 
 } // namespace logger {
