@@ -51,12 +51,11 @@ using namespace mesos;
 using namespace process;
 
 using mesos::slave::ContainerLogger;
+using mesos::slave::ContainerIO;
 
 namespace mesos {
 namespace internal {
 namespace logger {
-
-using SubprocessInfo = ContainerLogger::SubprocessInfo;
 
 class ExternalContainerLoggerProcess :
   public Process<ExternalContainerLoggerProcess>
@@ -66,7 +65,7 @@ public:
 
   // Spawns two subprocesses that should read from stdin to receive the stdout
   // and stderr log streams from the task.
-  Future<SubprocessInfo> prepare(
+  Future<ContainerIO> prepare(
       const ExecutorInfo& executorInfo,
       const std::string& sandboxDirectory,
       const Option<std::string>& user)
@@ -91,7 +90,7 @@ public:
     }
 
     // NOTE: We manually construct a pipe here instead of using
-    // `Subprocess::PIPE` so that the ownership of the FDs is properly
+    // `ContainerIO::PIPE` so that the ownership of the FDs is properly
     // represented.  The `Subprocess` spawned below owns the read-end
     // of the pipe and will be solely responsible for closing that end.
     // The ownership of the write-end will be passed to the caller
@@ -199,9 +198,9 @@ public:
     }
 
     // The ownership of these FDs is given to the caller of this function.
-    ContainerLogger::SubprocessInfo info;
-    info.out = SubprocessInfo::IO::FD(outfds.write.get());
-    info.err = SubprocessInfo::IO::FD(errfds.write.get());
+    ContainerIO info;
+    info.out = ContainerIO::IO::FD(outfds.write.get());
+    info.err = ContainerIO::IO::FD(errfds.write.get());
     return info;
   }
 protected:
@@ -229,7 +228,7 @@ Try<Nothing> ExternalContainerLogger::initialize()
   return Nothing();
 }
 
-Future<ContainerLogger::SubprocessInfo>
+Future<ContainerIO>
 ExternalContainerLogger::prepare(
     const ExecutorInfo& executorInfo,
     const std::string& sandboxDirectory,

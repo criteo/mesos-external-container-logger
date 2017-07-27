@@ -110,7 +110,7 @@ public:
 
   // Tells the subprocess to redirect the executor/task's stdout and stderr
   // to the external command.
-  virtual process::Future<mesos::slave::ContainerLogger::SubprocessInfo>
+  virtual process::Future<mesos::slave::ContainerIO>
   prepare(
       const ExecutorInfo& executorInfo,
       const std::string& sandboxDirectory,
