@@ -2,7 +2,7 @@
 
 set -e
 
-MESOS_VERSION=1.2.0
+MESOS_VERSION=1.3.0
 
 if [ ! -f mesos-$MESOS_VERSION.tar.gz ]; then
     curl --remote-name http://www-eu.apache.org/dist/mesos/$MESOS_VERSION/mesos-$MESOS_VERSION.tar.gz
