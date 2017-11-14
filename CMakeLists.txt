@@ -6,7 +6,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 project(mesos-external-container-logger
-    VERSION 0.1.3
+    VERSION 0.1.4
     LANGUAGES CXX C)
 enable_testing()
 
@@ -34,7 +34,7 @@ endif(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
 # Add gtest.
-add_subdirectory (${MESOS_SRC_DIR}/build/3rdparty/gmock-1.7.0)
+add_subdirectory (${MESOS_SRC_DIR}/build/3rdparty/googletest-release-1.8.0)
 #include_directories(${gmock_SOURCE_DIR} include)
 #include_directories(${gtest_SOURCE_DIR} include)
 
@@ -44,8 +44,8 @@ link_directories(
 
 include_directories(
     ./
-    ${MESOS_SRC_DIR}/build/3rdparty/gmock-1.7.0/gtest/include
-    ${MESOS_SRC_DIR}/build/3rdparty/gmock-1.7.0/include
+    ${MESOS_SRC_DIR}/build/3rdparty/googletest-release-1.8.0/googletest/include
+    ${MESOS_SRC_DIR}/build/3rdparty/googletest-release-1.8.0/googlemock/include
     ${MESOS_SRC_DIR}/build/3rdparty/include/zookeeper
     ${MESOS_SRC_DIR}/build/3rdparty/include
     ${MESOS_SRC_DIR}/build/src
