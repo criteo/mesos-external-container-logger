@@ -66,9 +66,8 @@ public:
   // Spawns two subprocesses that should read from stdin to receive the stdout
   // and stderr log streams from the task.
   Future<ContainerIO> prepare(
-      const ExecutorInfo& executorInfo,
-      const std::string& sandboxDirectory,
-      const Option<std::string>& user)
+      const ContainerID& containerId,
+      const mesos::slave::ContainerConfig& containerConfig)
   {
     // Setup a blank environment so as not to interfere with the executed
     // subprocess.
@@ -78,12 +77,12 @@ public:
     // since it's extremely convenient for shell scripts.
     environment.insert(
         std::pair<std::string, std::string>(flags.mesos_field_prefix +
-          "SANDBOX_DIRECTORY", sandboxDirectory)
+          "SANDBOX_DIRECTORY", containerConfig.directory())
     );
 
     // If json protobuf var is not blank, set it into the environment.
-    if (flags.executor_info_json_field != "") {
-      JSON::Object jsonObjExecInfo = JSON::protobuf(executorInfo);
+    if (flags.executor_info_json_field != "" && containerConfig.has_executor_info()) {
+      JSON::Object jsonObjExecInfo = JSON::protobuf(containerConfig.executor_info());
       std::string jsonExecInfo = stringify(jsonObjExecInfo);
       environment[flags.mesos_field_prefix + flags.executor_info_json_field]
                   = jsonExecInfo;
@@ -230,16 +229,14 @@ Try<Nothing> ExternalContainerLogger::initialize()
 
 Future<ContainerIO>
 ExternalContainerLogger::prepare(
-    const ExecutorInfo& executorInfo,
-    const std::string& sandboxDirectory,
-    const Option<std::string>& user)
+    const ContainerID& containerId,
+    const mesos::slave::ContainerConfig& containerConfig)
 {
   return dispatch(
       process.get(),
       &ExternalContainerLoggerProcess::prepare,
-      executorInfo,
-      sandboxDirectory,
-      user);
+      containerId,
+      containerConfig);
 }
 
 } // namespace logger {
