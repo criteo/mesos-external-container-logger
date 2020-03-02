@@ -87,6 +87,9 @@ public:
       environment[flags.mesos_field_prefix + flags.executor_info_json_field]
                   = jsonExecInfo;
     }
+    // Allow to pass all information to the script
+    JSON::Object containerConfigInfo = JSON::protobuf(containerConfig);
+    environment[flags.mesos_field_prefix + "CONTAINER_CONFIG"] = stringify(containerConfigInfo);
 
     // NOTE: We manually construct a pipe here instead of using
     // `ContainerIO::PIPE` so that the ownership of the FDs is properly
