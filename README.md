@@ -14,3 +14,7 @@ The module has been compiled for Debian 8 (jessie) and Debian testing (buster).
 Use the `compile.sh` and optionally the
 `build-mesos.sh` scripts to build the module for other distributions.
 CMake 3.0.0 or later is required to build.
+
+# Credits
+
+Thanks @wjoel for the creation and sheparding of this project.
