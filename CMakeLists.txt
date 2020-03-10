@@ -75,10 +75,10 @@ set(EXTERNAL_CONTAINER_LOGGER_SOURCES
 )
 
 # Module.
-add_library(external_container_logger-${PROJECT_VERSION}
+add_library(external_container_logger
     SHARED
     ${EXTERNAL_CONTAINER_LOGGER_SOURCES})
-target_link_libraries(external_container_logger-${PROJECT_VERSION})
+target_link_libraries(external_container_logger)
 
 set(WITH_SOURCE_MESOS "" CACHE STRING "Mesos source directory")
 set(MESOS_SOURCE_DIR ${WITH_SOURCE_MESOS})
