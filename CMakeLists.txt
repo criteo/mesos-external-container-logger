@@ -6,7 +6,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 project(mesos-external-container-logger
-    VERSION 0.2.0
+    VERSION 0.2.1
     LANGUAGES CXX C)
 enable_testing()
 
